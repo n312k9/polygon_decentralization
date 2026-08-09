@@ -12,14 +12,14 @@ WITH latest_stake AS (
             PARTITION BY validatorId
             ORDER BY evt_block_time DESC
         ) AS rn
-    FROM staking_polygon.stakinginfo_evt_stakeupdate
+    FROM polygon_validator_contract_2_ethereum.StakingInfo_evt_StakeUpdate
     WHERE evt_block_time >= TIMESTAMP '2020-05-30 00:00:00'
       AND evt_block_time <  TIMESTAMP '2026-05-30 00:00:00'
 ),
 exited AS (
     -- Step 6: exited set X
     SELECT DISTINCT validatorId
-    FROM staking_polygon.stakinginfo_evt_unstakeinit
+    FROM polygon_validator_contract_2_ethereum.StakingInfo_evt_UnstakeInit
     WHERE evt_block_time < TIMESTAMP '2026-05-30 00:00:00'
 )
 -- Step 7-8: V = active, non-exited, above stake floor smin = 1,000 POL
