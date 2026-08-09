@@ -1,0 +1,44 @@
+-- gini_hhi.sql
+-- Computes Gini coefficient (Eq. 4) and HHI (Eq. 5) from the study-end active set
+-- Output feeds Table 1 (G = 0.8174, HHI = 557.2) and Figure 1(a) Lorenz curve
+
+WITH active_set AS (
+    SELECT validatorId, stake_pol
+    FROM query_active_validator_set        -- reference to active_validator_set.sql result
+),
+totals AS (
+    SELECT SUM(stake_pol) AS total_stake, COUNT(*) AS m
+    FROM active_set
+),
+ranked AS (
+    -- ascending rank for Gini's order statistic s(i)
+    SELECT
+        validatorId,
+        stake_pol,
+        ROW_NUMBER() OVER (ORDER BY stake_pol ASC) AS i
+    FROM active_set
+),
+gini_terms AS (
+    SELECT
+        r.i,
+        r.stake_pol,
+        t.m,
+        t.total_stake,
+        (t.m - r.i + 0.5) * r.stake_pol AS weighted_term
+    FROM ranked r
+    CROSS JOIN totals t
+),
+hhi_terms AS (
+    SELECT
+        validatorId,
+        stake_pol,
+        POWER(stake_pol / t.total_stake, 2) * 10000 AS w_sq
+    FROM active_set
+    CROSS JOIN totals t
+)
+SELECT
+    (SELECT 1 - (2.0 / (t.m * t.total_stake)) * SUM(gt.weighted_term)
+     FROM gini_terms gt CROSS JOIN totals t) AS gini_coefficient,
+    (SELECT SUM(w_sq) FROM hhi_terms)         AS hhi,
+    (SELECT m FROM totals)                    AS validator_count,
+    (SELECT total_stake FROM totals)          AS total_staked_pol;
