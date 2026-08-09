@@ -1,0 +1,35 @@
+-- active_validator_set.sql
+-- Implements Algorithm 1 (Sec 3.3): active validator set construction
+-- Output: |V| = 103, S = 3,627.96M POL at study end (30 May 2026), feeds Table 1
+
+WITH latest_stake AS (
+    -- Step 1-5: latest StakeUpdate per validator within [Tstart, Tend]
+    SELECT
+        validatorId,
+        newAmount / 1e18 AS stake_pol,
+        evt_block_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY validatorId
+            ORDER BY evt_block_time DESC
+        ) AS rn
+    FROM staking_polygon.stakinginfo_evt_stakeupdate
+    WHERE evt_block_time >= TIMESTAMP '2020-05-30 00:00:00'
+      AND evt_block_time <  TIMESTAMP '2026-05-30 00:00:00'
+),
+exited AS (
+    -- Step 6: exited set X
+    SELECT DISTINCT validatorId
+    FROM staking_polygon.stakinginfo_evt_unstakeinit
+    WHERE evt_block_time < TIMESTAMP '2026-05-30 00:00:00'
+)
+-- Step 7-8: V = active, non-exited, above stake floor smin = 1,000 POL
+SELECT
+    ls.validatorId,
+    ls.stake_pol,
+    ls.evt_block_time AS last_update
+FROM latest_stake ls
+LEFT JOIN exited ex ON ls.validatorId = ex.validatorId
+WHERE ls.rn = 1
+  AND ex.validatorId IS NULL
+  AND ls.stake_pol >= 1000          -- smin floor, excludes dust Validator 193 (21 POL)
+ORDER BY ls.stake_pol DESC;
