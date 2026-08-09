@@ -1,0 +1,15 @@
+-- stakeupdate.sql
+-- Source: stakinginfo_evt_stakeupdate
+-- Purpose: authoritative source of delegation-inclusive voting power (Sec 3.2)
+-- Fires at every Heimdall checkpoint; newAmount = own bond + all accumulated delegations
+
+SELECT
+    validatorId,
+    newAmount,
+    evt_block_time,
+    evt_block_number,
+    evt_tx_hash
+FROM staking_polygon.stakinginfo_evt_stakeupdate
+WHERE evt_block_time >= TIMESTAMP '2020-05-30 00:00:00'
+  AND evt_block_time <  TIMESTAMP '2026-05-30 00:00:00'
+ORDER BY validatorId, evt_block_time;
