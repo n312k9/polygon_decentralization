@@ -103,9 +103,3 @@ Full monthly trajectory (72 months, June 2020-May 2026) is in `results/monthly_n
 
 ---
 
-## To-Do Before Submission
-
-- [ ] Re-run `entity_clustering.sql` across the other 8 delta_id/delta_s sensitivity configurations (only baseline delta_id=5, delta_s=1,000 has been verified so far).
-- [ ] Export and commit `results/*.csv` for each query, matching filenames.
-- [ ] Save each query's public Dune URL somewhere durable (e.g. as a header comment in each `.sql` file) in case query IDs are regenerated.
-- [ ] Replace `[REPOSITORY URL]` in the manuscript (Section 3.1 and the Data Availability statement) with this repo's public URL.
