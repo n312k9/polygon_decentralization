@@ -2,7 +2,7 @@
 -- Source: polygon_validator_contract_2_ethereum.StakingInfo_evt_StakeUpdate
 -- Purpose: authoritative source of delegation-inclusive voting power (Sec 3.2)
 -- Fires at every Heimdall checkpoint; newAmount = own bond + all accumulated delegations
--- Schema confirmed via working Q1/Q7 queries (ShareMinted/ShareBurned use same prefix)
+
 
 SELECT
     CAST(validatorId AS BIGINT) AS validator_id,
