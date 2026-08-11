@@ -4,7 +4,7 @@
 
 WITH active_set AS (
     SELECT validatorId, stake_pol
-    FROM query_active_validator_set        -- reference to active_validator_set.sql result
+    FROM query_8272036        -- active_validator_set.sql (https://dune.com/queries/8272036)
 ),
 totals AS (
     SELECT SUM(stake_pol) AS total_stake FROM active_set
@@ -28,7 +28,7 @@ SELECT
     CASE WHEN r.cum_stake / t.total_stake >= 2.0/3 THEN true ELSE false END AS crosses_safety_two_thirds
 FROM ranked r
 CROSS JOIN totals t
-ORDER BY r.k;
+ORDER BY r.k
 
 -- N_L = MIN(k) WHERE crosses_liveness_third = true
 -- N_S = MIN(k) WHERE crosses_safety_two_thirds = true
