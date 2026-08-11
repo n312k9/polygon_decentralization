@@ -18,11 +18,11 @@ stake_events AS (
         validatorId,
         newAmount / 1e18 AS stake_pol,
         evt_block_time
-    FROM staking_polygon.stakinginfo_evt_stakeupdate
+    FROM polygon_validator_contract_2_ethereum.StakingInfo_evt_StakeUpdate
 ),
 exited AS (
     SELECT validatorId, evt_block_time AS exit_time
-    FROM staking_polygon.stakinginfo_evt_unstakeinit
+    FROM polygon_validator_contract_2_ethereum.StakingInfo_evt_UnstakeInit
 ),
 snapshot AS (
     -- for each month boundary, latest stake per validator as of that boundary
@@ -56,8 +56,4 @@ SELECT
     validatorId,
     stake_pol
 FROM active_snapshot
-ORDER BY month_end, stake_pol DESC;
-
--- NOTE: N_L, N_S running-sum thresholds (theta = 1/3, 2/3) per month_end are
--- computed downstream in scripts/build_monthly_series.py from this export,
--- since the running-sum cutoff is easiest to apply per-group in pandas.
+ORDER BY month_end, stake_pol DESC
