@@ -12,13 +12,13 @@ WITH latest_bond AS (
             PARTITION BY validatorId
             ORDER BY evt_block_time DESC
         ) AS rn
-    FROM staking_polygon.stakinginfo_evt_staked
+    FROM polygon_validator_contract_2_ethereum.StakingInfo_evt_Staked
     WHERE evt_block_time >= TIMESTAMP '2020-05-30 00:00:00'
       AND evt_block_time <  TIMESTAMP '2026-05-30 00:00:00'
 ),
 exited AS (
     SELECT DISTINCT validatorId
-    FROM staking_polygon.stakinginfo_evt_unstakeinit
+    FROM polygon_validator_contract_2_ethereum.StakingInfo_evt_UnstakeInit
     WHERE evt_block_time < TIMESTAMP '2026-05-30 00:00:00'
 )
 SELECT
@@ -30,9 +30,9 @@ LEFT JOIN exited ex ON lb.validatorId = ex.validatorId
 WHERE lb.rn = 1
   AND ex.validatorId IS NULL
   AND lb.bond_pol >= 1000
-ORDER BY lb.bond_pol DESC;
+ORDER BY lb.bond_pol DESC
 
 -- Compare AVG(bond_pol) and MAX(bond_pol) here against
 -- AVG(stake_pol) and MAX(stake_pol) in active_validator_set.sql
 -- Paper reports: bond-only mean 15.2M / max 23.5M POL
---                delegation-inclusive mean 34.9M / max 411.5M POL (17.5x on largest validator)
+-- delegation-inclusive mean 34.9M / max 411.5M POL (17.5x on largest validator)
