@@ -8,7 +8,7 @@
 WITH active_set AS (
     -- pull from active_validator_set.sql result, sorted ascending by validatorId
     SELECT validatorId, stake_pol
-    FROM query_active_validator_set   -- reference to saved active_validator_set.sql query
+    FROM query_8272036   -- active_validator_set.sql (https://dune.com/queries/8272036)
     ORDER BY validatorId
 ),
 params AS (
@@ -41,9 +41,4 @@ SELECT
     stake_pol,
     clustered_with_prev
 FROM anchors
-ORDER BY validatorId;
-
--- NOTE: recursive anchor propagation (Algorithm 2, lines 1-7) and the final
--- grouped entity sums (sigma_k, sorted descending) are completed in
--- scripts/run_algorithm2.py against this query's exported CSV, since Dune SQL
--- does not support iterative/recursive anchor chaining natively.
+ORDER BY validatorId
